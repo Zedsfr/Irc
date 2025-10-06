@@ -1,0 +1,69 @@
+services:
+  mariadb:
+    build: ./requirements/mariadb/
+
+    image: mariadb
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+    - inception
+    volumes:
+    - maria_data:/var/lib/mysql
+    restart: always
+
+
+  wordpress:
+    build: ./requirements/wordpress/
+    depends_on:
+    - mariadb
+    image: wordpress
+    container_name: wordpress
+    environment:
+      MYSQL_HOST: mariadb
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MY_DOMAIN_NAME: ${MY_DOMAIN_NAME}
+    networks:
+    - inception
+    volumes:
+    - wordpress_data:/var/www/wordpress
+    restart: always
+
+
+
+  nginx:
+    build: ./requirements/nginx/
+    image: nginx
+    container_name: nginx
+    ports:
+    - "443:443"
+    depends_on:
+    - wordpress
+    networks:
+    - inception
+    volumes:
+    - wordpress_data:/var/www/wordpress
+    restart: always
+
+networks:
+    inception:
+      driver: bridge
+
+volumes:
+  maria_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mfernand/data/maria_data
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mfernand/data/wordpress_data
