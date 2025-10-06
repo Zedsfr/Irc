@@ -60,10 +60,10 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/mfernand/data/maria_data
+      device: /home/mdiomand/data/maria_data
   wordpress_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/mfernand/data/wordpress_data
+      device: /home/mdiomand/data/wordpress_data
